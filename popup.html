@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>OnStar Auth Token Saver</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #f0f4f9;
+        color: #1a1a2e;
+        width: 290px;
+      }
+      .header {
+        background: #0060df;
+        color: #fff;
+        padding: 1rem 1.1rem 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+      .header svg {
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+      }
+      .header-text h1 {
+        font-size: 0.88rem;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+      .header-text p {
+        font-size: 0.72rem;
+        opacity: 0.85;
+        margin-top: 1px;
+      }
+      .body {
+        padding: 1rem 1.1rem 0.9rem;
+      }
+      .field {
+        display: flex;
+        align-items: baseline;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        margin-bottom: 0.9rem;
+        background: #fff;
+        border: 1px solid #dde3ec;
+        border-radius: 6px;
+        padding: 0.45rem 0.65rem;
+      }
+      .field .lbl {
+        color: #666;
+        white-space: nowrap;
+      }
+      .field .val {
+        font-family: ui-monospace, monospace;
+        font-size: 0.78rem;
+        word-break: break-all;
+        color: #1a1a2e;
+      }
+      button {
+        display: block;
+        width: 100%;
+        padding: 0.55rem 0;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        background: #0060df;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        letter-spacing: 0.01em;
+        transition: background 0.15s;
+      }
+      button:hover:not(:disabled) {
+        background: #0050bb;
+      }
+      button:disabled {
+        background: #9ab5e0;
+        cursor: default;
+      }
+      #flowStatus {
+        font-size: 0.76rem;
+        margin-top: 0.5rem;
+        min-height: 1em;
+        text-align: center;
+        word-break: break-word;
+      }
+      #flowStatus.err {
+        color: #c0392b;
+      }
+      #flowStatus.ok {
+        color: #27ae60;
+      }
+      .footer {
+        border-top: 1px solid #dde3ec;
+        padding: 0.55rem 1.1rem;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .footer a {
+        font-size: 0.76rem;
+        color: #0060df;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="18" cy="22" r="9" fill="none" stroke="#fff" stroke-width="3" />
+        <circle cx="18" cy="22" r="4" fill="#0060df" />
+        <path d="M26 22h14" stroke="#fff" stroke-width="3" stroke-linecap="round" />
+        <path d="M36 22v6M31 22v5" stroke="#fff" stroke-width="3" stroke-linecap="round" />
+      </svg>
+      <div class="header-text">
+        <h1>OnStar Auth Token Saver</h1>
+        <p>GM / MyChevrolet OAuth helper</p>
+      </div>
+    </div>
+    <div class="body">
+      <div class="field">
+        <span class="lbl">Watching:</span>
+        <span class="val" id="watchUrl">…</span>
+      </div>
+      <button id="launchBtn">Launch Auth Flow</button>
+      <div id="flowStatus" aria-live="polite"></div>
+    </div>
+    <div class="footer">
+      <a id="optionsLink">Options</a>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>

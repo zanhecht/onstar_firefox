@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OnStar Auth Token Saver — Options</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #f0f4f9;
+        color: #1a1a2e;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2.5rem 1.5rem;
+      }
+      .card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        max-width: 520px;
+        width: 100%;
+        overflow: hidden;
+      }
+      .card-header {
+        background: #0060df;
+        color: #fff;
+        padding: 1.1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .card-header svg {
+        width: 30px;
+        height: 30px;
+        flex-shrink: 0;
+      }
+      .card-header h1 {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+      .card-body {
+        padding: 1.5rem;
+      }
+      label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+        color: #333;
+      }
+      input[type="url"] {
+        width: 100%;
+        padding: 0.5rem 0.7rem;
+        font-size: 0.92rem;
+        border: 1px solid #cdd5e0;
+        border-radius: 6px;
+      }
+      input[type="url"]:focus {
+        outline: none;
+        border-color: #0060df;
+        box-shadow: 0 0 0 3px rgba(0, 96, 223, 0.15);
+      }
+      .hint {
+        font-size: 0.79rem;
+        color: #666;
+        margin-top: 0.4rem;
+        line-height: 1.5;
+      }
+      .hint code {
+        background: #f0f4f9;
+        padding: 1px 4px;
+        border-radius: 3px;
+        font-family: ui-monospace, monospace;
+        font-size: 0.88em;
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1.2rem;
+      }
+      button {
+        padding: 0.5rem 1.4rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        background: #0060df;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        transition: background 0.15s;
+      }
+      button:hover {
+        background: #0050bb;
+      }
+      #status {
+        font-size: 0.84rem;
+        min-height: 1.2em;
+      }
+      #status.ok {
+        color: #27ae60;
+      }
+      #status.err {
+        color: #c0392b;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="card-header">
+        <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="18" cy="22" r="9" fill="none" stroke="#fff" stroke-width="3" />
+          <circle cx="18" cy="22" r="4" fill="#0060df" />
+          <path d="M26 22h14" stroke="#fff" stroke-width="3" stroke-linecap="round" />
+          <path d="M36 22v6M31 22v5" stroke="#fff" stroke-width="3" stroke-linecap="round" />
+        </svg>
+        <h1>OnStar Auth Token Saver</h1>
+      </div>
+      <div class="card-body">
+        <label for="watchUrl">OAuth base URL</label>
+        <input type="url" id="watchUrl" placeholder="https://custlogin.gm.com" />
+        <p class="hint">
+          The extension activates on pages whose <strong>protocol&nbsp;+&nbsp;hostname</strong> match this URL and watches for an
+          <code>msauth.com.gm.mychevrolet://</code> redirect. Default: <code>https://custlogin.gm.com</code>
+        </p>
+        <div class="actions">
+          <button id="save">Save</button>
+          <div id="status" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+    <script src="options.js"></script>
+  </body>
+</html>

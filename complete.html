@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tokens Captured — OnStar Auth</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #f0f4f9;
+        color: #1a1a2e;
+        min-height: 100vh;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 3rem 1.5rem;
+      }
+      .card {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.09);
+        max-width: 580px;
+        width: 100%;
+        padding: 2.5rem 2.5rem 2rem;
+      }
+      .success-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: #d4edda;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+      }
+      .success-icon svg {
+        width: 36px;
+        height: 36px;
+      }
+      h1 {
+        font-size: 1.4rem;
+        text-align: center;
+        margin-bottom: 0.5rem;
+        color: #1a1a2e;
+      }
+      .subtitle {
+        text-align: center;
+        color: #555;
+        font-size: 0.92rem;
+        margin-bottom: 2rem;
+      }
+      .divider {
+        border: none;
+        border-top: 1px solid #e8ecf0;
+        margin: 1.5rem 0;
+      }
+      h2 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #555;
+        margin-bottom: 1rem;
+      }
+      ol {
+        padding-left: 1.4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      ol li {
+        font-size: 0.92rem;
+        line-height: 1.5;
+      }
+      code {
+        background: #f0f4f9;
+        padding: 1px 5px;
+        border-radius: 4px;
+        font-size: 0.88em;
+        font-family: ui-monospace, monospace;
+      }
+      .cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-top: 1.5rem;
+        padding: 0.6rem 1.2rem;
+        background: #0060df;
+        color: #fff;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: background 0.15s;
+      }
+      .cta:hover {
+        background: #0050bb;
+      }
+      .cta-row {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="success-icon">
+        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="18" cy="18" r="18" fill="#28a745" />
+          <path d="M10 18l6 6 10-12" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <h1>Tokens Captured Successfully</h1>
+      <p class="subtitle">Your Microsoft authentication tokens were exchanged and are ready to save.</p>
+
+      <hr class="divider" />
+
+      <h2>Next Steps</h2>
+      <ol>
+        <li>
+          A <strong>Save File</strong> dialog has appeared (or will appear shortly). Save the file as <code>microsoft_tokens.json</code> to a location
+          you can easily find.
+        </li>
+        <li>
+          Place <code>microsoft_tokens.json</code> in the token directory for your OnStar JS / onstar2mqtt configuration — typically the path defined
+          by your <code>TOKEN_LOCATION</code> setting.
+        </li>
+        <li>Restart your OnStar service or add-on to pick up the new token file.</li>
+      </ol>
+    </div>
+  </body>
+</html>
