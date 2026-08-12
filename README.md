@@ -14,9 +14,10 @@ Captures the OAuth `code` parameter from the `msauth.com.gm.mychevrolet://auth` 
 ## How it works
 
 1. A content script injects a JavaScript location interceptor into every page **before any page scripts run** (via a `<script>` tag, since content scripts live in an isolated world separate from the page's JS environment).
-2. When any navigation to `msauth.com.gm.mychevrolet://` is attempted (via `href`, `assign`, or `replace`), the interceptor captures the full URL.
-3. The URL is relayed to the background script via a `CustomEvent` bridge.
-4. The background script extracts the `code=` query parameter and prompts the native OS **Save File** dialog to save a `.json` file.
+2. When any navigation to `msauth.com.gm.mychevrolet://` is attempted (via `href`, `assign`, or `replace`), the interceptor captures the full URL. If the browser already has a valid session, the OAuth server returns an immediate HTTP 302 to the custom scheme — this is caught at the network layer via `webRequest.onHeadersReceived` before any page loads.
+3. The captured redirect URL is relayed to the background script.
+4. The background script performs a PKCE token exchange: it POSTs the `code` and `code_verifier` to the token endpoint discovered from the OpenID configuration, receiving a full token set (`access_token`, `refresh_token`, `id_token`, etc.).
+5. The auth tab is navigated to a completion page with next-step instructions, and a native **Save File** dialog prompts you to save `microsoft_tokens.json`.
 
 The active listening only starts on pages whose hostname matches the configured **OAuth base URL** (default: `https://custlogin.gm.com`).
 
