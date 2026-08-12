@@ -1,6 +1,14 @@
 # OnStar Auth Token Saver – Firefox Extension
 
-Captures the OAuth `code` parameter from the `msauth.com.gm.mychevrolet://auth` redirect during a GM/OnStar login flow and prompts you to save it as a JSON file.
+Captures the OAuth `code` parameter from the `msauth.com.gm.mychevrolet://auth` redirect during a GM/OnStar login flow, exchanges it for a full Microsoft token set via PKCE, and prompts you to save the result as `microsoft_tokens.json`.
+
+## Quick Start
+
+1. Open [about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox) in Firefox.
+2. Click **Load Temporary Add-on…** and select `manifest.json` from this folder.
+3. Click the **Extensions** puzzle-piece button in the Firefox toolbar, then click **OnStar Auth Token Saver**.
+4. Click **Launch Auth Flow** — a new tab opens and walks through GM login.
+5. After login (or immediately if you're already signed in), the tab navigates to a completion page and a **Save File** dialog appears. Save as `microsoft_tokens.json` and place it in your OnStar JS token directory.
 
 ## How it works
 
@@ -15,17 +23,20 @@ The active listening only starts on pages whose hostname matches the configured 
 
 ```json
 {
-  "auth_url": "msauth.com.gm.mychevrolet://auth?code=XXXX&...",
-  "code": "XXXX",
-  "captured_at": "2024-01-01T00:00:00.000Z"
+  "access_token": "...",
+  "refresh_token": "...",
+  "id_token": "...",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "scope": "...",
+  "captured_at": "2026-08-12T00:00:00.000Z"
 }
 ```
 
 ## Installation (temporary / development)
 
-1. Open Firefox and navigate to `about:debugging`.
-2. Click **This Firefox** → **Load Temporary Add-on**.
-3. Select the `manifest.json` file from this folder.
+1. Open [about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox) in Firefox.
+2. Click **Load Temporary Add-on…** and select `manifest.json` from this folder.
 
 To install permanently, the extension must be signed by Mozilla or loaded via Firefox Developer Edition / Nightly with `xpinstall.signatures.required` set to `false` in `about:config`.
 
@@ -36,5 +47,4 @@ The extension matches on **protocol + hostname** only (port is matched if specif
 
 ## Notes
 
-- The Save dialog requires Firefox's built-in download prompt. If Firefox is configured to save all files silently to a default folder, the dialog will not appear. Check **Settings → General → Downloads → Always ask where to save files**.
 - The location interceptor is injected on all pages but captures nothing unless the `msauth.com.gm.mychevrolet://` prefix appears in a navigation call.
