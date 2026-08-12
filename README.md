@@ -4,11 +4,12 @@ Captures the OAuth `code` parameter from the `msauth.com.gm.mychevrolet://auth` 
 
 ## Quick Start
 
-1. Open [about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox) in Firefox.
-2. Click **Load Temporary Add-on…** and select `manifest.json` from this folder.
-3. Click the **Extensions** puzzle-piece button in the Firefox toolbar, then click **OnStar Auth Token Saver**.
-4. Click **Launch Auth Flow** — a new tab opens and walks through GM login.
-5. After login (or immediately if you're already signed in), the tab navigates to a completion page and a **Save File** dialog appears. Save as `microsoft_tokens.json` and place it in your OnStar JS token directory.
+1. On the [GitHub repository page](https://github.com/metheos/onstar_firefox), click the green **Code** button, then choose **Download ZIP**. Extract the ZIP to a folder on your computer.
+2. Open [about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox) in Firefox.
+3. Click **Load Temporary Add-on…** and select `manifest.json` from the extracted folder.
+4. Click the **Extensions** puzzle-piece button in the Firefox toolbar, then click **OnStar Auth Token Saver**.
+5. Click **Launch Auth Flow** — a new tab opens and walks through GM login.
+6. After login (or immediately if you're already signed in), the tab navigates to a completion page and a **Save File** dialog appears. Save as `microsoft_tokens.json` and place it in your OnStar JS token directory.
 
 ## How it works
 
