@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirect Capture Log</title>
+    <style>
+      :root {
+        --bg: #f3f6fb;
+        --panel: #ffffff;
+        --text: #1a1a2e;
+        --muted: #68758a;
+        --line: #dce3ef;
+        --brand: #0060df;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        color: var(--text);
+        background: radial-gradient(circle at 10% 0%, #eaf1ff, #f8fbff 45%, #f3f6fb 100%);
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 1.2rem;
+      }
+      .header {
+        background: linear-gradient(120deg, #0b4aa4, #0060df);
+        color: #fff;
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        box-shadow: 0 8px 20px rgba(14, 37, 84, 0.25);
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .header p {
+        margin: 0.25rem 0 0;
+        opacity: 0.9;
+        font-size: 0.9rem;
+      }
+      .toolbar {
+        margin-top: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      button {
+        border: 1px solid transparent;
+        border-radius: 7px;
+        padding: 0.45rem 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 0.82rem;
+      }
+      #refreshBtn {
+        background: #0f6ce8;
+        color: #fff;
+      }
+      #clearBtn {
+        background: #fff;
+        color: #1f3355;
+        border-color: #b7c7e2;
+      }
+      #summary {
+        margin-left: auto;
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+      .table-wrap {
+        margin-top: 0.85rem;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.6rem 0.7rem;
+        border-bottom: 1px solid #edf1f7;
+        font-size: 0.8rem;
+        vertical-align: top;
+      }
+      th {
+        font-size: 0.75rem;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: #42516a;
+        background: #f6f9ff;
+      }
+      td code {
+        display: inline-block;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.76rem;
+        background: #f5f8fe;
+        border: 1px solid #e3e9f5;
+        border-radius: 4px;
+        padding: 0.05rem 0.25rem;
+        max-width: 100%;
+        white-space: normal;
+        word-break: break-all;
+      }
+      .url {
+        max-width: 420px;
+        word-break: break-all;
+      }
+      .empty {
+        padding: 1rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .status {
+        display: inline-block;
+        padding: 0.15rem 0.4rem;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        border: 1px solid #d4def0;
+        background: #f2f6ff;
+        color: #244f90;
+      }
+      @media (max-width: 840px) {
+        th:nth-child(5),
+        td:nth-child(5),
+        th:nth-child(6),
+        td:nth-child(6) {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <h1>Captured Redirect Log</h1>
+        <p>Every observed msauth redirect response with parsed OAuth details and exchange outcome.</p>
+      </div>
+      <div class="toolbar">
+        <button id="refreshBtn">Refresh</button>
+        <button id="clearBtn">Clear Log</button>
+        <div id="summary">Loading...</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Code</th>
+              <th>State</th>
+              <th>Exchange</th>
+              <th>Status</th>
+              <th>Tab</th>
+              <th>Redirect URL</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <div id="empty" class="empty" hidden>No redirects captured yet.</div>
+      </div>
+    </div>
+    <script src="redirect-log.js"></script>
+  </body>
+</html>

@@ -10,16 +10,15 @@ Captures the OAuth `code` parameter from the `msauth.com.gm.mychevrolet://auth` 
 4. Click the **Extensions** puzzle-piece button in the Firefox toolbar, then click **OnStar Auth Token Saver**.
 5. Click **Launch Auth Flow** — a new tab opens and walks through GM login.
 6. After login (or immediately if you're already signed in), the tab navigates to a completion page and a **Save File** dialog appears. Save as `microsoft_tokens.json` and place it in your OnStar JS token directory.
+7. Use **View Capture Log** from the popup to inspect every captured redirect, including timestamp, code, state, and exchange status.
 
 ## How it works
 
-1. A content script injects a JavaScript location interceptor into every page **before any page scripts run** (via a `<script>` tag, since content scripts live in an isolated world separate from the page's JS environment).
-2. When any navigation to `msauth.com.gm.mychevrolet://` is attempted (via `href`, `assign`, or `replace`), the interceptor captures the full URL. If the browser already has a valid session, the OAuth server returns an immediate HTTP 302 to the custom scheme — this is caught at the network layer via `webRequest.onHeadersReceived` before any page loads.
-3. The captured redirect URL is relayed to the background script.
-4. The background script performs a PKCE token exchange: it POSTs the `code` and `code_verifier` to the token endpoint discovered from the OpenID configuration, receiving a full token set (`access_token`, `refresh_token`, `id_token`, etc.).
-5. The auth tab is navigated to a completion page with next-step instructions, and a native **Save File** dialog prompts you to save `microsoft_tokens.json`.
-
-The active listening only starts on pages whose hostname matches the configured **OAuth base URL** (default: `https://custlogin.gm.com`).
+1. The popup starts the GM auth flow by opening the OAuth authorization URL in a new tab.
+2. The background script listens for HTTP response headers from `custlogin.gm.com` and captures redirects whose `Location` starts with `msauth.com.gm.mychevrolet://`.
+3. The background script performs a PKCE token exchange: it POSTs the `code` and `code_verifier` to the token endpoint discovered from the OpenID configuration, receiving a full token set (`access_token`, `refresh_token`, `id_token`, etc.).
+4. The auth tab is navigated to a completion page with next-step instructions, and a native **Save File** dialog prompts you to save `microsoft_tokens.json`.
+5. Every captured redirect is logged in extension storage, even when there is no matching pending PKCE flow.
 
 ## Saved file format
 
@@ -42,11 +41,7 @@ The active listening only starts on pages whose hostname matches the configured 
 
 To install permanently, the extension must be signed by Mozilla or loaded via Firefox Developer Edition / Nightly with `xpinstall.signatures.required` set to `false` in `about:config`.
 
-## Configuration
-
-Click the toolbar icon → **Open Options** to change the watched base URL.  
-The extension matches on **protocol + hostname** only (port is matched if specified).
-
 ## Notes
 
-- The location interceptor is injected on all pages but captures nothing unless the `msauth.com.gm.mychevrolet://` prefix appears in a navigation call.
+- The extension does not inject scripts into web pages.
+- Host access is limited to `custlogin.gm.com` for redirect observation.

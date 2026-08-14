@@ -1,17 +1,8 @@
 "use strict";
 
-const DEFAULT_WATCH_URL = "https://custlogin.gm.com";
-
 document.addEventListener("DOMContentLoaded", () => {
-  browser.storage.local.get({ watchUrl: DEFAULT_WATCH_URL }).then((result) => {
-    document.getElementById("watchUrl").textContent = result.watchUrl;
-  });
-
-  document.getElementById("optionsLink").addEventListener("click", () => {
-    browser.runtime.openOptionsPage();
-  });
-
   const launchBtn = document.getElementById("launchBtn");
+  const openLogBtn = document.getElementById("openLogBtn");
   const flowStatus = document.getElementById("flowStatus");
 
   launchBtn.addEventListener("click", () => {
@@ -32,5 +23,9 @@ document.addEventListener("DOMContentLoaded", () => {
       .finally(() => {
         launchBtn.disabled = false;
       });
+  });
+
+  openLogBtn.addEventListener("click", () => {
+    browser.tabs.create({ url: browser.runtime.getURL("redirect-log.html") });
   });
 });

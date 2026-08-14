@@ -6,6 +6,8 @@ const DISCOVERY_URL =
 const CLIENT_ID = "3ff30506-d242-4bed-835b-422bf992622e";
 const REDIRECT_URI = "msauth.com.gm.mychevrolet://auth";
 const SCOPE = `https://gmb2cprod.onmicrosoft.com/${CLIENT_ID}/Test.Read openid profile offline_access`;
+const REDIRECT_LOG_KEY = "redirectCaptureLog";
+const REDIRECT_LOG_MAX_ITEMS = 250;
 
 // ── PKCE helpers (Web Crypto) ────────────────────────────────────────────────
 
@@ -72,10 +74,10 @@ async function startAuthFlow() {
   await browser.tabs.create({ url: authorizationUrl });
 }
 
-// ── Token save (shared by both capture paths) ───────────────────────────────
+// ── Token save and redirect processing ──────────────────────────────────────
 
-// Dedup by state param: prevents double-save when both webRequest and the
-// content script fire for the same immediate-redirect token.
+// Dedup by state param: prevents double-save when multiple redirect responses
+// for the same auth attempt are observed.
 const _recentStates = new Map(); // state -> timestamp
 
 function extractParam(url, name) {
@@ -93,6 +95,62 @@ function isDuplicate(authUrl) {
   if (_recentStates.has(state)) return true;
   _recentStates.set(state, now);
   return false;
+}
+
+function generateLogId() {
+  if (crypto && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+async function appendRedirectLog(entry) {
+  const { [REDIRECT_LOG_KEY]: existing } = await browser.storage.local.get(REDIRECT_LOG_KEY);
+  const list = Array.isArray(existing) ? existing : [];
+  list.push(entry);
+  if (list.length > REDIRECT_LOG_MAX_ITEMS) {
+    list.splice(0, list.length - REDIRECT_LOG_MAX_ITEMS);
+  }
+  await browser.storage.local.set({ [REDIRECT_LOG_KEY]: list });
+}
+
+async function updateRedirectLog(logId, patch) {
+  if (!logId) return;
+  const { [REDIRECT_LOG_KEY]: existing } = await browser.storage.local.get(REDIRECT_LOG_KEY);
+  const list = Array.isArray(existing) ? existing : [];
+  const idx = list.findIndex((item) => item && item.id === logId);
+  if (idx === -1) return;
+  list[idx] = { ...list[idx], ...patch };
+  await browser.storage.local.set({ [REDIRECT_LOG_KEY]: list });
+}
+
+async function logCapturedRedirect(authUrl, details) {
+  const code = extractParam(authUrl, "code");
+  const state = extractParam(authUrl, "state");
+  const error = extractParam(authUrl, "error");
+  const errorDescription = extractParam(authUrl, "error_description");
+  const { pendingPkce } = await browser.storage.local.get("pendingPkce");
+
+  const logEntry = {
+    id: generateLogId(),
+    captured_at: new Date().toISOString(),
+    redirect_url: authUrl,
+    code: code || null,
+    state: state || null,
+    error: error || null,
+    error_description: errorDescription || null,
+    tab_id: details?.tabId ?? null,
+    request_url: details?.url ?? null,
+    status_code: details?.statusCode ?? null,
+    request_type: details?.type ?? null,
+    pending_pkce_present: Boolean(pendingPkce),
+    pending_pkce_state: pendingPkce?.state || null,
+    exchange_status: "captured",
+    exchange_detail: null,
+  };
+
+  await appendRedirectLog(logEntry);
+  return logEntry.id;
 }
 
 function saveTokenFile(tokenSet) {
@@ -118,25 +176,43 @@ function saveTokenFile(tokenSet) {
     });
 }
 
-async function exchangeAndSave(authUrl, tabId = null) {
+async function exchangeAndSave(authUrl, tabId = null, logId = null) {
   if (!authUrl || !authUrl.toLowerCase().startsWith(AUTH_PREFIX.toLowerCase())) return;
-  if (isDuplicate(authUrl)) return;
+  if (isDuplicate(authUrl)) {
+    await updateRedirectLog(logId, {
+      exchange_status: "duplicate",
+      exchange_detail: "A redirect with the same state was already processed recently.",
+    });
+    return;
+  }
 
   const code = extractParam(authUrl, "code");
   const state = extractParam(authUrl, "state");
   if (!code) {
+    await updateRedirectLog(logId, {
+      exchange_status: "skipped_no_code",
+      exchange_detail: "Redirect did not contain an OAuth code parameter.",
+    });
     console.error("[OnStar Auth] No code in redirect URL");
     return;
   }
 
   const { pendingPkce } = await browser.storage.local.get("pendingPkce");
   if (!pendingPkce) {
+    await updateRedirectLog(logId, {
+      exchange_status: "skipped_no_pending_pkce",
+      exchange_detail: "Captured redirect was not associated with an active PKCE flow.",
+    });
     console.error("[OnStar Auth] No pending PKCE session found");
     return;
   }
 
   const { code_verifier, state: expectedState, token_endpoint } = pendingPkce;
   if (state && expectedState && state !== expectedState) {
+    await updateRedirectLog(logId, {
+      exchange_status: "state_mismatch",
+      exchange_detail: "Captured redirect state does not match pending PKCE state.",
+    });
     console.error("[OnStar Auth] State mismatch — possible CSRF");
     return;
   }
@@ -159,6 +235,10 @@ async function exchangeAndSave(authUrl, tabId = null) {
 
   const tokenSet = await resp.json();
   if (!resp.ok) {
+    await updateRedirectLog(logId, {
+      exchange_status: "token_exchange_failed",
+      exchange_detail: tokenSet?.error_description || tokenSet?.error || `Token endpoint returned ${resp.status}.`,
+    });
     console.error("[OnStar Auth] Token exchange failed:", tokenSet);
     return;
   }
@@ -167,6 +247,10 @@ async function exchangeAndSave(authUrl, tabId = null) {
     browser.tabs.update(tabId, { url: browser.runtime.getURL("complete.html") }).catch(() => {});
   }
   saveTokenFile({ ...tokenSet, captured_at: new Date().toISOString() });
+  await updateRedirectLog(logId, {
+    exchange_status: "token_saved",
+    exchange_detail: "Token exchange succeeded and save-file prompt was shown.",
+  });
 }
 
 // ── webRequest: catch immediate HTTP-302 redirects (pre-page-load) ───────────
@@ -181,7 +265,9 @@ browser.webRequest.onHeadersReceived.addListener(
     if (!location) return;
     const redirectUrl = location.value;
     if (redirectUrl.toLowerCase().startsWith(AUTH_PREFIX.toLowerCase())) {
-      exchangeAndSave(redirectUrl, details.tabId).catch((err) => console.error("[OnStar Auth] Exchange failed:", err));
+      logCapturedRedirect(redirectUrl, details)
+        .then((logId) => exchangeAndSave(redirectUrl, details.tabId, logId))
+        .catch((err) => console.error("[OnStar Auth] Exchange failed:", err));
     }
   },
   { urls: ["*://custlogin.gm.com/*"] },
@@ -198,8 +284,4 @@ browser.runtime.onMessage.addListener((message, sender) => {
       return Promise.reject(err.message || String(err));
     });
   }
-
-  if (message.type !== "AUTH_URL_CAPTURED") return;
-
-  exchangeAndSave(message.authUrl, sender.tab?.id).catch((err) => console.error("[OnStar Auth] Exchange failed:", err));
 });

@@ -44,27 +44,6 @@
       .body {
         padding: 1rem 1.1rem 0.9rem;
       }
-      .field {
-        display: flex;
-        align-items: baseline;
-        gap: 0.4rem;
-        font-size: 0.8rem;
-        margin-bottom: 0.9rem;
-        background: #fff;
-        border: 1px solid #dde3ec;
-        border-radius: 6px;
-        padding: 0.45rem 0.65rem;
-      }
-      .field .lbl {
-        color: #666;
-        white-space: nowrap;
-      }
-      .field .val {
-        font-family: ui-monospace, monospace;
-        font-size: 0.78rem;
-        word-break: break-all;
-        color: #1a1a2e;
-      }
       button {
         display: block;
         width: 100%;
@@ -86,6 +65,14 @@
         background: #9ab5e0;
         cursor: default;
       }
+      .secondary {
+        margin-top: 0.45rem;
+        background: #e7edf6;
+        color: #16335b;
+      }
+      .secondary:hover:not(:disabled) {
+        background: #dce6f4;
+      }
       #flowStatus {
         font-size: 0.76rem;
         margin-top: 0.5rem;
@@ -98,21 +85,6 @@
       }
       #flowStatus.ok {
         color: #27ae60;
-      }
-      .footer {
-        border-top: 1px solid #dde3ec;
-        padding: 0.55rem 1.1rem;
-        display: flex;
-        justify-content: flex-end;
-      }
-      .footer a {
-        font-size: 0.76rem;
-        color: #0060df;
-        text-decoration: none;
-        cursor: pointer;
-      }
-      .footer a:hover {
-        text-decoration: underline;
       }
     </style>
   </head>
@@ -130,15 +102,9 @@
       </div>
     </div>
     <div class="body">
-      <div class="field">
-        <span class="lbl">Watching:</span>
-        <span class="val" id="watchUrl">…</span>
-      </div>
       <button id="launchBtn">Launch Auth Flow</button>
+      <button id="openLogBtn" class="secondary">View Capture Log</button>
       <div id="flowStatus" aria-live="polite"></div>
-    </div>
-    <div class="footer">
-      <a id="optionsLink">Options</a>
     </div>
     <script src="popup.js"></script>
   </body>

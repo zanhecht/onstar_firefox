@@ -3,22 +3,10 @@
   "name": "OnStar Auth Token Saver",
   "version": "1.0.0",
   "description": "Captures OAuth auth codes from GM/OnStar login flow and saves them to a file.",
-  "permissions": ["downloads", "storage", "tabs", "webRequest", "<all_urls>"],
+  "permissions": ["downloads", "storage", "tabs", "webRequest", "*://custlogin.gm.com/*"],
   "background": {
     "scripts": ["background.js"],
     "persistent": true
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "run_at": "document_start",
-      "all_frames": false
-    }
-  ],
-  "options_ui": {
-    "page": "options.html",
-    "open_in_tab": false
   },
   "icons": {
     "16": "icons/icon.svg",
