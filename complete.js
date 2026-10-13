@@ -35,15 +35,14 @@
   link.href = url;
   link.download = "microsoft_tokens.json";
   link.textContent = "here";
+  link.id = "downloadLink";
 
   document.getElementById("downloadLink").replaceWith(link);
 
   // Keep the Blob URL for 10 minutes or until clicked.
   const expireLink = () => {
     URL.revokeObjectURL(url);
-    link.removeAttribute("href");
-    link.removeAttribute("download");
-    link.title = "Link expired";
+    document.getElementById("clickSentence").innerHTML = "";
   };
   setTimeout(expireLink, 600000);
   link.addEventListener("click", () => {setTimeout(expireLink, 10000);});
