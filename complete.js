@@ -38,6 +38,13 @@
 
   document.getElementById("downloadLink").replaceWith(link);
 
-  // Keep the Blob URL alive while the browser processes the download.
-  setTimeout(() => URL.revokeObjectURL(url), 10000);
+  // Keep the Blob URL for 10 minutes or until clicked.
+  const expireLink = () => {
+    URL.revokeObjectURL(url);
+    link.removeAttribute("href");
+    link.removeAttribute("download");
+    link.title = "Link expired";
+  };
+  setTimeout(expireLink, 600000);
+  link.addEventListener("click", () => {setTimeout(expireLink, 10000);});
 })();
