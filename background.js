@@ -244,7 +244,10 @@ async function exchangeAndSave(authUrl, tabId = null, logId = null) {
   }
 
   if (tabId != null) {
-    browser.tabs.update(tabId, { url: browser.runtime.getURL("complete.html") }).catch(() => {});
+    const key = `tokenExport_${crypto.randomUUID()}`;
+    await browser.storage.local.set({ [key]: tokenSet });
+    const completeUrl = browser.runtime.getURL(`complete.html?key=${encodeURIComponent(key)}`);
+    browser.tabs.update(tabId, { url: browser.runtime.getURL(completeUrl) }).catch(() => {});
   }
   saveTokenFile({ ...tokenSet, captured_at: new Date().toISOString() });
   await updateRedirectLog(logId, {

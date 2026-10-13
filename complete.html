@@ -117,16 +117,16 @@
           <path d="M10 18l6 6 10-12" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </div>
-      <h1>Tokens Captured Successfully</h1>
-      <p class="subtitle">Your Microsoft authentication tokens were exchanged and are ready to save.</p>
+      <h1 id="header1">Tokens Captured Successfully</h1>
+      <p class="subtitle" id="subtitle">Your Microsoft authentication tokens were exchanged and are ready to save.</p>
 
       <hr class="divider" />
 
-      <h2>Next Steps</h2>
-      <ol>
+      <h2 id="header2">Next Steps</h2>
+      <ol id="orderedList">
         <li>
           A <strong>Save File</strong> dialog has appeared (or will appear shortly). Save the file as <code>microsoft_tokens.json</code> to a location
-          you can easily find.
+          you can easily find. Click <a href="#" id="downloadLink">here</a> if your download does not begin automatically.
         </li>
         <li>
           Place <code>microsoft_tokens.json</code> in the token directory for your OnStar JS / onstar2mqtt configuration — typically the path defined
@@ -135,5 +135,6 @@
         <li>Restart your OnStar service or add-on to pick up the new token file.</li>
       </ol>
     </div>
+    <script src="complete.js"></script>
   </body>
 </html>
